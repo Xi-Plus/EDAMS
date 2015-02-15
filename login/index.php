@@ -69,7 +69,6 @@ if(checklogin()){
 <meta charset="UTF-8">
 <title>登入-EDAMS </title>
 <link href="login.css" rel="stylesheet" type="text/css">
-<link href="../res/css.css" rel="stylesheet" type="text/css">
 <?php
 include_once("../res/meta.php");
 meta();

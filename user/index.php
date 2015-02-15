@@ -75,7 +75,6 @@ $editdata=mfa(SELECT(["name"],"account",[["id",$editid]]));
 <meta charset="UTF-8">
 <title>User-EDAMS</title>
 <link href="user.css" rel="stylesheet" type="text/css">
-<link href="../res/css.css" rel="stylesheet" type="text/css">
 <?php
 include_once("../res/meta.php");
 meta();

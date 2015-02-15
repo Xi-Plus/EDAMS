@@ -7,12 +7,11 @@ include_once("../func/url.php");
 ?>
 <head>
 <meta charset="UTF-8">
+<title>EDAMS</title>
 <?php
 include_once("../res/meta.php");
 meta();
 ?>
-<title>EDAMS</title>
-<link href="../res/css.css" rel="stylesheet" type="text/css">
 </head>
 <body topmargin="0" leftmargin="0" bottommargin="0">
 <?php

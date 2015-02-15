@@ -13,7 +13,6 @@ setcookie("ELMScookie", "", time(), "/");
 <head>
 <meta charset="UTF-8">
 <title>登出-EDAMS </title>
-<link href="../res/css.css" rel="stylesheet" type="text/css">
 <?php
 include_once("../res/meta.php");
 meta();

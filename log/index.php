@@ -17,7 +17,6 @@ else if($data["power"]<=1){
 <head>
 <meta charset="UTF-8">
 <title>圖書管理-TFcisBooks</title>
-<link href="../res/css.css" rel="stylesheet" type="text/css">
 <?php
 include_once("../res/meta.php");
 meta();
