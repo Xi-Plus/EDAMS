@@ -44,7 +44,7 @@ else if(isset($_POST["editid"])){
 ?>
 <head>
 <meta charset="UTF-8">
-<title>使用者管理-TFcisBooks</title>
+<title>Manageuser-EDAMS</title>
 <link rel="icon" href="../res/icon.ico" type="image/x-icon">
 <?php
 include_once("../res/meta.php");

@@ -44,7 +44,7 @@ function SELECT($return,$table,$where=null,$order=null,$limit=array(0,1),$group=
 		$query.="ORDER BY ";
 		foreach($order as $index => $value){
 			if($index!=0)$query.=", ";
-			$query.="`$value[0]` $value[1] ";
+			$query.="`$value[0]` ".($value[1]==""?"ASC":$value[1])." ";
 		}
 	}
 	$query.=LIMIT($limit);
@@ -93,6 +93,15 @@ function DELETE($table,$where=null,$limit=1){
 	if(mysqli_connect_errno($link))
 		consolelog("Failed to connect to MySQL: " . iconv("big5","utf-8",mysqli_connect_error()));
 	$query="DELETE FROM `$table` ".WHERE($link,$where).LIMIT($limit);
+	$result=mysqli_query($link, $query);
+	mysqli_close($link);
+	return $result;
+}
+function SQL($query){
+	include("../config/db.php");
+	$link = mysqli_connect($db[0],$db[1],$db[2],$db[3]);
+	if(mysqli_connect_errno($link))
+		consolelog("Failed to connect to MySQL: " . iconv("big5","utf-8",mysqli_connect_error()));
 	$result=mysqli_query($link, $query);
 	mysqli_close($link);
 	return $result;

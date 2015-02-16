@@ -35,7 +35,7 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		<tr>
 			<td valign="top">
 				<?php
-				$row=SELECT("*","tablelist",null,null,"all");
+				$row=SELECT("*","tablelist",array(array("aval",1)),array(array("time"),array("name")),"all");
 				while($temp = mfa($row) ){
 					$tablelist[]=$temp["name"];
 				?>
@@ -59,19 +59,22 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			<td colspan="2" align="center" class="datatd">速率</td>
 			<td colspan="2" align="center" class="datatd">速率平方</td>
 			<td align="center" class="datatd">速率差</td>
+			<td colspan="2" align="center" class="datatd">log10()</td>
 		</tr>
 		<tr>
-			<td class="datatd">before</td>
-			<td class="datatd">after</td>
+			<td class="datatd">muzzle</td>
+			<td class="datatd">terminal</td>
 			<td class="datatd">count</td>
-			<td class="datatd">before</td>
-			<td class="datatd">after</td>
-			<td class="datatd">before</td>
-			<td class="datatd">after</td>
+			<td class="datatd">muzzle</td>
+			<td class="datatd">terminal</td>
+			<td class="datatd">muzzle</td>
+			<td class="datatd">terminal</td>
 			<td class="datatd"></td>
+			<td class="datatd">mV</td>
+			<td class="datatd">dW</td>
 		</tr>
 		<?php
-		$row=SELECT( "*",$_GET["table"],null,array(array("before","ASC"),array("after","ASC")) ,"all" );
+		$row=SELECT( "*",$_GET["table"],array(array("aval",1)),array(array("muzzle"),array("terminal")) ,"all" );
 		$vmax=0;
 		$vmin=1000;
 		$dmax=0;
@@ -79,35 +82,40 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		$vsum=0;
 		$dsum=0;
 		$count=0;
+		
+		$vsum_log=0;
+		$dsum_log=0;
 		while($temp = mfa($row) ){
 			$count++;
-			$tb=$temp["before"];
-			$ta=$temp["after"];
+			$tb=$temp["muzzle"];
+			$ta=$temp["terminal"];
 			$vb=10/$tb;
 			$vsum+=$vb;
+			$vsum_log+=log10($vb);
 			$va=10/$ta;
 			$vpb=pow($vb,2);
 			$vpa=pow($va,2);
 			$vpd=$vpb-$vpa;
 			$dsum+=$vpd;
+			$dsum_log+=log10($vpd);
 			if($vb>$vmax)$vmax=$vb;
 			else if($vb<$vmin)$vmin=$vb;
 			if($vpd>$dmax)$dmax=$vpd;
 			else if($vpd<$dmin)$dmin=$vpd;
-			if($data[$temp["before"]][$temp["after"]]==0)$beforecount[$temp["before"]]++;
-			$data[$temp["before"]][$temp["after"]]++;
+			if($data[$temp["muzzle"]][$temp["terminal"]]==0)$muzzlecount[$temp["muzzle"]]++;
+			$data[$temp["muzzle"]][$temp["terminal"]]++;
 		}
 		$vavg=$vsum/$count;
 		$davg=$dsum/$count;
 		
 		$border=50;
-		$imgw=600;
+		$imgw=500;
 		$imgh=400;
 		$truew=$imgw+$border*2;
 		$trueh=$imgh+$border*2;
 		$img = ImageCreateTrueColor($truew,$trueh);
 		imagefilledrectangle($img,0,0,$truew,$trueh,imagecolorallocate($img,255,255,255));
-		imagettftext($img,20,0,100,35,imagecolorallocate($img,0,0,0),"arial.ttf",$_GET["table"]);
+		imagettftext($img,20,0,10,35,imagecolorallocate($img,0,0,0),"arial.ttf",$_GET["table"]);
 		
 		/*$vmax+=5;
 		$vmin-=5;
@@ -116,32 +124,66 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		
 		$vd=$vmax-$vmin;
 		$add=10;
-		for($i=ceil($vmin/$add)*$add;$i<=floor($vmax/$add)*$add;$i+=10){
+		for($i=ceil($vmin/$add)*$add;$i<=floor($vmax/$add)*$add;$i+=$add){
 			imagettftext($img,10,0,translen($i,$vmin,$vd,$imgw,$border)-5,$trueh-$border+15,imagecolorallocate($img,0,0,0),"simhei.ttf",$i);
 			imageline($img,translen($i,$vmin,$vd,$imgw,$border),$trueh-$border,translen($i,$vmin,$vd,$imgw,$border),$border,imagecolorallocate($img,0,0,0));
 		}
 		$dd=$dmax-$dmin;
 		$add=200;
-		if($dmax/200>20)$add=250;
+		if($dmax/200>30)$add=250;
+		if($dmax/250>30)$add=500;
 		for($i=ceil($dmin/$add)*$add;$i<=floor($dmax/$add)*$add;$i+=$add){
 			imagettftext($img,10,0,5,translen($i,$dmin,$dd,$imgh,$border,true)+5,imagecolorallocate($img,0,0,0),"simhei.ttf",str_pad(intval($i),5," ",STR_PAD_LEFT));
 			imagettftext($img,10,0,$truew-$border+5,translen($i,$dmin,$dd,$imgh,$border,true)+5,imagecolorallocate($img,0,0,0),"simhei.ttf",str_pad(intval($i),5," ",STR_PAD_LEFT));
 			imageline($img,$border,translen($i,$dmin,$dd,$imgh,$border,true),$truew-$border,translen($i,$dmin,$dd,$imgh,$border,true),imagecolorallocate($img,0,0,0));
 		}
+		/********************************************************/
+		$vmax_log=log10($vmax);
+		$vmin_log=log10($vmin);
+		$dmax_log=log10($dmax);
+		$dmin_log=log10($dmin);
+		$vavg_log=$vsum_log/$count;
+		$davg_log=$dsum_log/$count;
 		
+		$img_log = ImageCreateTrueColor($truew,$trueh);
+		imagefilledrectangle($img_log,0,0,$truew,$trueh,imagecolorallocate($img_log,255,255,255));
+		imagettftext($img_log,20,0,10,35,imagecolorallocate($img_log,0,0,0),"arial.ttf",$_GET["table"]."_log");
+		
+		$vd_log=$vmax_log-$vmin_log;
+		$add=0.1;
+		for($i=ceil($vmin_log/$add)*$add;$i<=floor($vmax_log/$add)*$add;$i+=$add){
+			imagettftext($img_log,10,0,translen($i,$vmin_log,$vd_log,$imgw,$border)-5,$trueh-$border+15,imagecolorallocate($img_log,0,0,0),"simhei.ttf",$i);
+			imageline($img_log,translen($i,$vmin_log,$vd_log,$imgw,$border),$trueh-$border,translen($i,$vmin_log,$vd_log,$imgw,$border),$border,imagecolorallocate($img_log,0,0,0));
+		}
+		$dd_log=$dmax_log-$dmin_log;
+		$add=0.1;
+		for($i=ceil($dmin_log/$add)*$add;$i<=floor($dmax_log/$add)*$add;$i+=$add){
+			imagettftext($img_log,10,0,5,translen($i,$dmin_log,$dd_log,$imgh,$border,true)+5,imagecolorallocate($img_log,0,0,0),"simhei.ttf",str_pad(($i),5," ",STR_PAD_LEFT));
+			imagettftext($img_log,10,0,$truew-$border+5,translen($i,$dmin_log,$dd_log,$imgh,$border,true)+5,imagecolorallocate($img_log,0,0,0),"simhei.ttf",str_pad(($i),5," ",STR_PAD_LEFT));
+			imageline($img_log,$border,translen($i,$dmin_log,$dd_log,$imgh,$border,true),$truew-$border,translen($i,$dmin_log,$dd_log,$imgh,$border,true),imagecolorallocate($img_log,0,0,0));
+		}
+		
+		/********************************************************/
 		$a=0;
 		$a2=0;
 		$r11=0;
 		$r21=0;
 		$r22=0;
+		
+		$a_log=0;
+		$a2_log=0;
+		$r11_log=0;
+		$r21_log=0;
+		$r22_log=0;
+		
 		$index=0;
-		foreach($data as $bindex => $before){
+		foreach($data as $bindex => $muzzle){
 		?>
 		<tr>
-			<td rowspan="<?php echo $beforecount[$bindex]; ?>" align="right" class="datatd"><?php echo sprintf("%.2f",round($bindex,2)); ?></td>
+			<td rowspan="<?php echo $muzzlecount[$bindex]; ?>" align="right" class="datatd"><?php echo sprintf("%.2f",round($bindex,2)); ?></td>
 		<?php
-			foreach($before as $aindex => $after){
-				$total+=$after;
+			foreach($muzzle as $aindex => $terminal){
+				$total+=$terminal;
 				$tb=$bindex;
 				$ta=$aindex;
 				$vb=10/$tb;
@@ -149,20 +191,34 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 				$vpb=pow($vb,2);
 				$vpa=pow($va,2);
 				$vpd=$vpb-$vpa;
-				$a+=($vb-$vavg)*($vpd-$davg)*$after;
-				$a2+=pow($vb-$vavg,2)*$after;
-				$r11+=$vb*$vpd*$after;
-				$r21+=pow($vb,2)*$after;
-				$r22+=pow($vpd,2)*$after;
+				
+				$a+=($vb-$vavg)*($vpd-$davg)*$terminal;
+				$a2+=pow($vb-$vavg,2)*$terminal;
+				$r11+=$vb*$vpd*$terminal;
+				$r21+=pow($vb,2)*$terminal;
+				$r22+=pow($vpd,2)*$terminal;
+				
+				$vb_log=log10($vb);
+				$vpd_log=log10($vpd);
+				$a_log+=($vb_log-$vavg_log)*($vpd_log-$davg_log)*$terminal;
+				$a2_log+=pow($vb_log-$vavg_log,2)*$terminal;
+				$r11_log+=$vb_log*$vpd_log*$terminal;
+				$r21_log+=pow($vb_log,2)*$terminal;
+				$r22_log+=pow($vpd_log,2)*$terminal;
+				
 				imagefilledellipse($img,translen($vb,$vmin,$vd,$imgw,$border),translen($vpd,$dmin,$dd,$imgh,$border,true),5,5,imagecolorallocate($img,0,0,0));
+				
+				imagefilledellipse($img_log,translen(log10($vb),$vmin_log,$vd_log,$imgw,$border),translen(log10($vpd),$dmin_log,$dd_log,$imgh,$border,true),5,5,imagecolorallocate($img_log,0,0,0));
 		?>
 				<td align="right" class="datatd"><?php echo sprintf("%.2f",round($ta,2)); ?></td>
-				<td align="right" class="datatd"><?php echo $after; ?></td>
+				<td align="right" class="datatd"><?php echo $terminal; ?></td>
 				<td align="right" class="datatd"><?php echo sprintf("%.2f",round($vb,2)); ?></td>
 				<td align="right" class="datatd"><?php echo sprintf("%.2f",round($va,2)); ?></td>
 				<td align="right" class="datatd"><?php echo sprintf("%.2f",round($vpb,2)); ?></td>
 				<td align="right" class="datatd"><?php echo sprintf("%.2f",round($vpa,2)); ?></td>
 				<td align="right" class="datatd"><?php echo sprintf("%.2f",round($vpd,2)); ?></td>
+				<td align="right" class="datatd"><?php echo sprintf("%.2f",round(log10($vb),2)); ?></td>
+				<td align="right" class="datatd"><?php echo sprintf("%.2f",round(log10($vpd),2)); ?></td>
 			</tr>
 		<?php
 			}
@@ -173,7 +229,13 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		$b=$davg-$a*$vavg;
 		$r=( $count*$r11-$vsum*$dsum )/sqrt(( $count*$r21-pow($vsum,2) )*( $count*$r22-pow($dsum,2) ));
 		imageline($img,translen($vmin,$vmin,$vd,$imgw,$border),translen($vmin*$a+$b,$dmin,$dd,$imgh,$border,true),translen($vmax,$vmin,$vd,$imgw,$border),translen($vmax*$a+$b,$dmin,$dd,$imgh,$border,true),imagecolorallocate($img,0,0,0));
-		imagettftext($img,16,0,250,35,imagecolorallocate($img,0,0,0),"simhei.ttf","迴歸線: y=".round($a,2)."x".($b>=0?"+":"").round($b,2)."   R^2=".round(pow($r,2),4));
+		imagettftext($img,16,0,150,35,imagecolorallocate($img,0,0,0),"simhei.ttf","迴歸線: y=".round($a,2)."x".($b>=0?"+":"").round($b,2)."   R^2=".round(pow($r,2),4));
+		
+		$a_log/=$a2_log;
+		$b_log=$davg_log-$a_log*$vavg_log;
+		$r_log=( $count*$r11_log-$vsum_log*$dsum_log )/sqrt(( $count*$r21_log-pow($vsum_log,2) )*( $count*$r22_log-pow($dsum_log,2) ));
+		imageline($img_log,translen($vmin_log,$vmin_log,$vd_log,$imgw,$border),translen($vmin_log*$a_log+$b_log,$dmin_log,$dd_log,$imgh,$border,true),translen($vmax_log,$vmin_log,$vd_log,$imgw,$border),translen($vmax_log*$a_log+$b_log,$dmin_log,$dd_log,$imgh,$border,true),imagecolorallocate($img_log,0,0,0));
+		imagettftext($img_log,16,0,200,35,imagecolorallocate($img_log,0,0,0),"simhei.ttf","迴歸線: y=".round($a_log,2)."x".($b_log>=0?"+":"").round($b_log,2)."   R^2=".round(pow($r_log,2),4));
 		?>
 		<tr>
 			<td class="datatd"></td>
@@ -197,6 +259,15 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			imagedestroy($img);
 			?>
 			<img src="<?php echo "./".$_GET["table"].".png"; ?>">
+			</td>
+		</tr>
+		<tr>
+			<td align="center" valign="top" style="border-style: solid; border-width: 1px;">
+			<?php
+			imagepng($img_log,"./".$_GET["table"]."_log.png");
+			imagedestroy($img_log);
+			?>
+			<img src="<?php echo "./".$_GET["table"]."_log.png"; ?>">
 			</td>
 		</tr>
 		</table>

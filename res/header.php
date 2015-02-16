@@ -47,7 +47,7 @@ document.onkeydown=keyFunction;
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td height="20" valign="middle" bgcolor="#0000FF" style="color: #FFF">
-			<div style="float:left;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="../home" target="_parent" style="color:#FFF" >Home</a>&nbsp;|&nbsp;<a href="../data" target="_parent" style="color:#FFF">Data</a>&nbsp;|&nbsp;<a href="../user" target="_parent" style="color:#FFF">User</a></div><?php if($login["power"]>=2){ ?><div style="float:left;">&nbsp;|&nbsp;<a href="../manageuser" target="_parent" style="color:#FFF">ManageUser</a>&nbsp;|&nbsp;<a href="../log" target="_parent" style="color:#FFF">Log</a></div>
+			<div style="float:left;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="../home" target="_parent" style="color:#FFF" >Home</a>&nbsp;|&nbsp;<a href="../data" target="_parent" style="color:#FFF">Data</a>&nbsp;|&nbsp;<a href="../user" target="_parent" style="color:#FFF">User</a></div><?php if($login["power"]>=2){ ?><div style="float:left;">&nbsp;|&nbsp;[Manage]&nbsp;<a href="../managedata" target="_parent" style="color:#FFF">Data</a>&nbsp;|&nbsp;<a href="../managetable" target="_parent" style="color:#FFF">Table</a>&nbsp;|&nbsp;<a href="../manageuser" target="_parent" style="color:#FFF">User</a>&nbsp;|&nbsp;<a href="../log" target="_parent" style="color:#FFF">Log</a></div>
 			<?php } ?>
 		</td>
 		<td height="20" valign="middle" bgcolor="#0000FF" style="text-align: right; color: #FFF;">
