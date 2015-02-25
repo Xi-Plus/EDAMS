@@ -7,7 +7,7 @@ include_once("../func/consolelog.php");
 $error="";
 $message="";
 $data=checklogin();
-if($data==false)header("Location: ../login/?from=managebook");
+if($data==false)header("Location: ../login/?from=log");
 else if($data["power"]<=1){
 	$error="你沒有權限";
 	insertlog($data["id"],0,"managebook",false,"no power");

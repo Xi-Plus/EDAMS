@@ -38,7 +38,11 @@ function SELECT($return,$table,$where=null,$order=null,$limit=array(0,1),$group=
 	}
 	$query.="FROM `$table` ".WHERE($link,$where);
 	if($group){
-		$query.="GROUP BY `$group` ";
+		$query.="GROUP BY ";
+		foreach($group as $index => $value){
+			if($index!=0)$query.=",";
+			$query.="`$value` ";
+		}
 	}
 	if($order){
 		$query.="ORDER BY ";
@@ -48,6 +52,7 @@ function SELECT($return,$table,$where=null,$order=null,$limit=array(0,1),$group=
 		}
 	}
 	$query.=LIMIT($limit);
+	consolelog($query);
 	$result=mysqli_query($link, $query);
 	mysqli_close($link);
 	return $result;

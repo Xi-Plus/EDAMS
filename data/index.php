@@ -55,23 +55,23 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		<h2><?php echo $_GET["table"]; ?></h2>
 		<table border="0" cellpadding="2" cellspacing="0">
 		<tr>
-			<td colspan="3" align="center" class="datatd">時間</td>
-			<td colspan="2" align="center" class="datatd">速率</td>
-			<td colspan="2" align="center" class="datatd">速率平方</td>
-			<td align="center" class="datatd">速率差</td>
-			<td colspan="2" align="center" class="datatd">log10()</td>
+			<td colspan="3" align="center" class="datatd">時間<br>(s)</td>
+			<td colspan="2" align="center" class="datatd">速率<br>(cm/s)</td>
+			<td colspan="2" align="center" class="datatd">速率<sup>2</sup><br>(cm<sup>2</sup>/s<sup>2</sup>)</td>
+			<td align="center" class="datatd">速率<sup>2</sup>差<br>(cm<sup>2</sup>/s<sup>2</sup>)</td>
+			<td colspan="2" align="center" class="datatd">log</td>
 		</tr>
 		<tr>
-			<td class="datatd">muzzle</td>
-			<td class="datatd">terminal</td>
-			<td class="datatd">count</td>
-			<td class="datatd">muzzle</td>
-			<td class="datatd">terminal</td>
-			<td class="datatd">muzzle</td>
-			<td class="datatd">terminal</td>
-			<td class="datatd"></td>
-			<td class="datatd">mV</td>
-			<td class="datatd">dW</td>
+			<td class="datatd" align="center">初</td>
+			<td class="datatd" align="center">末</td>
+			<td class="datatd" align="center">count</td>
+			<td class="datatd" align="center">初</td>
+			<td class="datatd" align="center">末</td>
+			<td class="datatd" align="center">初</td>
+			<td class="datatd" align="center">末</td>
+			<td class="datatd" align="center"></td>
+			<td class="datatd" align="center">初速</td>
+			<td class="datatd" align="center">動能差</td>
 		</tr>
 		<?php
 		$row=SELECT( "*",$_GET["table"],array(array("aval",1)),array(array("muzzle"),array("terminal")) ,"all" );
