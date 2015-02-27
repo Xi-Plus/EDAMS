@@ -4,6 +4,7 @@ include_once("../func/sql.php");
 include_once("../func/url.php");
 include_once("../func/checklogin.php");
 include_once("../func/consolelog.php");
+include_once("../func/math.php");
 ?>
 <head>
 <meta charset="UTF-8">
@@ -85,6 +86,8 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		
 		$vsum_log=0;
 		$dsum_log=0;
+		$A=array();
+		$B=array();
 		while($temp = mfa($row) ){
 			$count++;
 			$tb=$temp["muzzle"];
@@ -96,6 +99,8 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			$vpb=pow($vb,2);
 			$vpa=pow($va,2);
 			$vpd=$vpb-$vpa;
+			$A[]=$vb;
+			$B[]=$vpd;
 			$dsum+=$vpd;
 			$dsum_log+=log10($vpd);
 			if($vb>$vmax)$vmax=$vb;
@@ -105,6 +110,28 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			if($data[$temp["muzzle"]][$temp["terminal"]]==0)$muzzlecount[$temp["muzzle"]]++;
 			$data[$temp["muzzle"]][$temp["terminal"]]++;
 		}
+		
+		echo "<hr>";
+		
+		echo "新式算法<br>";
+		
+		$D=LR($A,$B,1);
+		echo "一次迴歸線: y=".round($D[1],2)."x".($D[0]>=0?"+":"").round($D[0],2)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),4)."<br>";
+		
+		$D=LR($A,$B,2);
+		echo "<font color='#FF0000'>二次迴歸線: y=".round($D[2],2)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],2)."x".($D[0]>=0?"+":"").round($D[0],2)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),4)."</font><br>";
+		
+		
+		$D=LR($A,$B,2,array(0,0));
+		echo "<font color='#0000FF'>僅二次迴歸線: y=".round($D[2],2)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],2)."x".($D[0]>=0?"+":"").round($D[0],2)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),4)."</font><br>";
+		
+		echo "<hr>";
+		
+		$D=LR1($A,$B);
+		echo "一次迴歸線: y=".round($D["a"],2)."x".($D["b"]>=0?"+":"").round($D["b"],2)."<br>R<sup>2</sup>=".round($D["R2"],4)."<br>";
+		$D=LR2($A,$B);
+		echo "二次迴歸線: y=".round($D["a"],2)."x<sup>2</sup>".($D["b"]>=0?"+":"").round($D["b"],2)."x".($D["c"]>=0?"+":"").round($D["c"],2)."<br>R<sup>2</sup>=".round($D["R2"],4)."<br>";
+		
 		$vavg=$vsum/$count;
 		$davg=$dsum/$count;
 		
@@ -136,6 +163,15 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			imagettftext($img,10,0,5,translen($i,$dmin,$dd,$imgh,$border,true)+5,imagecolorallocate($img,0,0,0),"simhei.ttf",str_pad(intval($i),5," ",STR_PAD_LEFT));
 			imagettftext($img,10,0,$truew-$border+5,translen($i,$dmin,$dd,$imgh,$border,true)+5,imagecolorallocate($img,0,0,0),"simhei.ttf",str_pad(intval($i),5," ",STR_PAD_LEFT));
 			imageline($img,$border,translen($i,$dmin,$dd,$imgh,$border,true),$truew-$border,translen($i,$dmin,$dd,$imgh,$border,true),imagecolorallocate($img,0,0,0));
+		}
+		
+		$D=LR2($A,$B);
+		for($i=ceil($vmin*10)/10;$i<=floor($vmax*10)/10;$i+=0.1){
+			imagefilledellipse($img,translen($i,$vmin,$vd,$imgw,$border),translen(pow($i,2)*$D["a"]+$i*$D["b"]+$D["c"],$dmin,$dd,$imgh,$border,true),1,1,imagecolorallocate($img,255,0,0));
+		}
+		$D=LR($A,$B,2,array(0,0));
+		for($i=ceil($vmin*10)/10;$i<=floor($vmax*10)/10;$i+=0.1){
+			imagefilledellipse($img,translen($i,$vmin,$vd,$imgw,$border),translen(pow($i,2)*$D[2]+$i*$D[0]+$D[1],$dmin,$dd,$imgh,$border,true),1,1,imagecolorallocate($img,0,0,255));
 		}
 		/********************************************************/
 		$vmax_log=log10($vmax);
@@ -229,18 +265,22 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		$b=$davg-$a*$vavg;
 		$r=( $count*$r11-$vsum*$dsum )/sqrt(( $count*$r21-pow($vsum,2) )*( $count*$r22-pow($dsum,2) ));
 		imageline($img,translen($vmin,$vmin,$vd,$imgw,$border),translen($vmin*$a+$b,$dmin,$dd,$imgh,$border,true),translen($vmax,$vmin,$vd,$imgw,$border),translen($vmax*$a+$b,$dmin,$dd,$imgh,$border,true),imagecolorallocate($img,0,0,0));
-		imagettftext($img,16,0,150,35,imagecolorallocate($img,0,0,0),"simhei.ttf","迴歸線: y=".round($a,2)."x".($b>=0?"+":"").round($b,2)."   R^2=".round(pow($r,2),4));
+		//imagettftext($img,16,0,150,35,imagecolorallocate($img,0,0,0),"simhei.ttf","迴歸線: y=".round($a,2)."x".($b>=0?"+":"").round($b,2)."   R^2=".round(pow($r,2),4));
+		//echo "一次迴歸線: y=".round($a,2)."x".($b>=0?"+":"").round($b,2)."<br>R<sup>2</sup>=".round(pow($r,2),4)."<br>";
 		
 		$a_log/=$a2_log;
 		$b_log=$davg_log-$a_log*$vavg_log;
 		$r_log=( $count*$r11_log-$vsum_log*$dsum_log )/sqrt(( $count*$r21_log-pow($vsum_log,2) )*( $count*$r22_log-pow($dsum_log,2) ));
 		imageline($img_log,translen($vmin_log,$vmin_log,$vd_log,$imgw,$border),translen($vmin_log*$a_log+$b_log,$dmin_log,$dd_log,$imgh,$border,true),translen($vmax_log,$vmin_log,$vd_log,$imgw,$border),translen($vmax_log*$a_log+$b_log,$dmin_log,$dd_log,$imgh,$border,true),imagecolorallocate($img_log,0,0,0));
-		imagettftext($img_log,16,0,200,35,imagecolorallocate($img_log,0,0,0),"simhei.ttf","迴歸線: y=".round($a_log,2)."x".($b_log>=0?"+":"").round($b_log,2)."   R^2=".round(pow($r_log,2),4));
+		//imagettftext($img_log,16,0,200,35,imagecolorallocate($img_log,0,0,0),"simhei.ttf","迴歸線: y=".round($a_log,2)."x".($b_log>=0?"+":"").round($b_log,2)."   R^2=".round(pow($r_log,2),4));
+		echo "log迴歸線: y=".round($a_log,2)."x".($b_log>=0?"+":"").round($b_log,2)."<br>R<sup>2</sup>=".round(pow($r_log,2),4)."<br>";
 		?>
 		<tr>
 			<td class="datatd"></td>
 			<td class="datatd"></td>
 			<td align="right" class="datatd"><?php echo $total; ?></td>
+			<td class="datatd"></td>
+			<td class="datatd"></td>
 			<td class="datatd"></td>
 			<td class="datatd"></td>
 			<td class="datatd"></td>
