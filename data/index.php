@@ -111,7 +111,6 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			$data[$temp["muzzle"]][$temp["terminal"]]++;
 		}
 		
-		echo "<hr>";
 		
 		echo "新式算法<br>";
 		
