@@ -23,7 +23,7 @@ if(checklogin()){
 			insertlog(0,$row["id"],"login",false,"account block");
 		}else{
 			$cookie=md5(uniqid(rand(),true));
-			setcookie("ELMScookie", $cookie, time()+86400*7, "/");
+			setcookie("EDAMScookie", $cookie, time()+86400*7, "/");
 			INSERT("session",array(array("id",$row["id"]),array("cookie",$cookie)));
 			insertlog(0,$row["id"],"login");
 			$message="登入成功";
