@@ -86,6 +86,10 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		
 		$vsum_log=0;
 		$dsum_log=0;
+		$EA=array();
+		$EB=array();
+		$VA=array();
+		$VB=array();
 		$A=array();
 		$B=array();
 		while($temp = mfa($row) ){
@@ -99,8 +103,12 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			$vpb=pow($vb,2);
 			$vpa=pow($va,2);
 			$vpd=$vpb-$vpa;
-			$A[]=$vb;
-			$B[]=$vpd;
+			$EA[]=$vpb;
+			$EB[]=$vpd;
+			$A[]=round($vb,2);
+			$B[]=round($vpd,2);
+			$VA[]=$vb;
+			$VB[]=$vb-$va;
 			$dsum+=$vpd;
 			$dsum_log+=log10($vpd);
 			if($vb>$vmax)$vmax=$vb;
@@ -111,25 +119,45 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			$data[$temp["muzzle"]][$temp["terminal"]]++;
 		}
 		
+		$roundn=4;
+		$roundr=4;
 		
 		echo "新式算法<br>";
 		
 		$D=LR($A,$B,1);
-		echo "一次迴歸線: y=".round($D[1],2)."x".($D[0]>=0?"+":"").round($D[0],2)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),4)."<br>";
+		echo "一次迴歸線: y=".round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),$roundr)."<br>";
 		
 		$D=LR($A,$B,2);
-		echo "<font color='#FF0000'>二次迴歸線: y=".round($D[2],2)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],2)."x".($D[0]>=0?"+":"").round($D[0],2)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),4)."</font><br>";
+		echo "<font color='#FF0000'>二次迴歸線: y=".round($D[2],$roundn)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),$roundr)."</font><br>";
 		
 		
 		$D=LR($A,$B,2,array(0,0));
-		echo "<font color='#0000FF'>僅二次迴歸線: y=".round($D[2],2)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],2)."x".($D[0]>=0?"+":"").round($D[0],2)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),4)."</font><br>";
+		echo "<font color='#0000FF'>僅二次迴歸線: y=".round($D[2],$roundn)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),$roundr)."</font><br>";
+		
+		$D=LR($A,$B,3);
+		echo "三次迴歸線: y=".round($D[3],$roundn)."x<sup>3</sup>".($D[2]>=0?"+":"").round($D[2],$roundn)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),$roundr)."<br>";
+		
+		
+		$D=LR($A,$B,3,array(0,0,0));
+		echo "僅三次迴歸線: y=".round($D[3],$roundn)."x<sup>3</sup>".($D[2]>=0?"+":"").round($D[2],$roundn)."x<sup>2</sup>".($D[1]>=0?"+":"").round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($A,$B,$D),$roundr)."<br>";
+		
+		echo "<hr>";
+		echo "Delta V - V0<br>";
+		$D=LR($VA,$VB,1);
+		echo "一次迴歸線: y=".round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($VA,$VB,$D),$roundr)."<br>";
+		
+		echo "E0 - Delta E<br>";
+		$D=LR($EA,$EB,1);
+		echo "一次迴歸線: y=".round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($EA,$EB,$D),$roundr)."<br>";
+		$D=LR($EA,$EB,1,array(0));
+		echo "一次迴歸線: y=".round($D[1],$roundn)."x".($D[0]>=0?"+":"").round($D[0],$roundn)."<br>R<sup>2</sup>=".round(R2($EA,$EB,$D),$roundr)."<br>";
 		
 		echo "<hr>";
 		
 		$D=LR1($A,$B);
-		echo "一次迴歸線: y=".round($D["a"],2)."x".($D["b"]>=0?"+":"").round($D["b"],2)."<br>R<sup>2</sup>=".round($D["R2"],4)."<br>";
+		echo "一次迴歸線: y=".round($D["a"],$roundn)."x".($D["b"]>=0?"+":"").round($D["b"],$roundn)."<br>R<sup>2</sup>=".round($D["R2"],$roundr)."<br>";
 		$D=LR2($A,$B);
-		echo "二次迴歸線: y=".round($D["a"],2)."x<sup>2</sup>".($D["b"]>=0?"+":"").round($D["b"],2)."x".($D["c"]>=0?"+":"").round($D["c"],2)."<br>R<sup>2</sup>=".round($D["R2"],4)."<br>";
+		echo "二次迴歸線: y=".round($D["a"],$roundn)."x<sup>2</sup>".($D["b"]>=0?"+":"").round($D["b"],$roundn)."x".($D["c"]>=0?"+":"").round($D["c"],$roundn)."<br>R<sup>2</sup>=".round($D["R2"],$roundr)."<br>";
 		
 		$vavg=$vsum/$count;
 		$davg=$dsum/$count;
@@ -139,7 +167,7 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		$imgh=400;
 		$truew=$imgw+$border*2;
 		$trueh=$imgh+$border*2;
-		$img = ImageCreateTrueColor($truew,$trueh);
+		$img = imageCreateTrueColor($truew,$trueh);
 		imagefilledrectangle($img,0,0,$truew,$trueh,imagecolorallocate($img,255,255,255));
 		imagettftext($img,20,0,10,35,imagecolorallocate($img,0,0,0),"arial.ttf",$_GET["table"]);
 		
