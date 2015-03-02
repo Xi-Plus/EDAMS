@@ -70,8 +70,22 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 	<td valign="top"><textarea name="x" cols="5" rows="30"><?php foreach($x as $i => $t){echo ($i!=0?"\n":"").$t;} ?></textarea></td>
 	<td valign="top"><textarea name="y" cols="5" rows="30"><?php foreach($y as $i => $t){echo ($i!=0?"\n":"").$t;} ?></textarea></td>
 	<td align="center" valign="top">
-		次方 <input name="power" type="number" value="<?php echo $_POST["power"]; ?>" style="width:40px"><br>
-		<input name="" type="submit" value="送出">
+		<input name="input" type="submit" value="送出"><br><br>
+		繪圖<br>次方<br>
+		<input name="power" type="number" value="<?php echo $_POST["power"]; ?>" style="width:40px"><br><br>
+		截距<br>
+		<table width="0" border="0" cellspacing="0" cellpadding="0">
+			<tr><td>0</td><td><input name="pow0" type="text" value="<?php echo $_POST["pow0"] ?>" size="1"></td></tr>
+			<tr><td>1</td><td><input name="pow1" type="text" value="<?php echo $_POST["pow1"] ?>" size="1"></td></tr>
+			<tr><td>2</td><td><input name="pow2" type="text" value="<?php echo $_POST["pow2"] ?>" size="1"></td></tr>
+			<tr><td>3</td><td><input name="pow3" type="text" value="<?php echo $_POST["pow3"] ?>" size="1"></td></tr>
+			<tr><td>4</td><td><input name="pow4" type="text" value="<?php echo $_POST["pow4"] ?>" size="1"></td></tr>
+			<tr><td>5</td><td><input name="pow5" type="text" value="<?php echo $_POST["pow5"] ?>" size="1"></td></tr>
+			<tr><td>6</td><td><input name="pow6" type="text" value="<?php echo $_POST["pow6"] ?>" size="1"></td></tr>
+			<tr><td>7</td><td><input name="pow7" type="text" value="<?php echo $_POST["pow7"] ?>" size="1"></td></tr>
+			<tr><td>8</td><td><input name="pow8" type="text" value="<?php echo $_POST["pow8"] ?>" size="1"></td></tr>
+			<tr><td>9</td><td><input name="pow9" type="text" value="<?php echo $_POST["pow9"] ?>" size="1"></td></tr>
+		</table>
 	</td>
 	<td valign="top">
 	<?php
@@ -111,11 +125,16 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 			<td>R<sup>2</sup></td>
 		</tr>
 		<?php
+		$pow=array();
+		for($i=0;$i<=9;$i++){
+			if($_POST["pow".$i]=="")$pow[$i]=false;
+			else $pow[$i]=$_POST["pow".$i];
+		}
 		for($i=1;$i<=10;$i++){
 		?>
 		<tr>
 		<?php
-			$D=LR($x,$y,$i);
+			$D=LR($x,$y,$i,$pow);
 			?><td><?php echo $i; ?></td>
 			<td <?php echo ($_POST["power"]!=""&&$_POST["power"]==$i?"style='color: #0000FF'":""); ?>><?php
 			for($j=$i;$j>=0;$j--){
@@ -136,7 +155,7 @@ function translen($len,$start,$differ,$reallen,$border,$onem=false){
 		<?php
 		}
 		if($_POST["power"]){
-			$D=LR($x,$y,$_POST["power"]);
+			$D=LR($x,$y,$_POST["power"],$pow);
 			for($j=$x_min;$j<=$x_max;$j+=$x_d/5000){
 				$tempy=0;
 				for($k=0;$k<=$_POST["power"];$k++){
