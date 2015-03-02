@@ -19,7 +19,15 @@ include_once("../res/header.php");
 $row=SELECT("*","tablelist",array(array("aval","1")),array(array("time")),"all");
 $muzzle_min=100;
 $muzzle_max=0;
+$table=array();
+$urltemp=explode("\r\n",$_GET["table"]);
+foreach($urltemp as $temp){
+	if($temp!=""){
+		$table[]=$temp;
+	}
+}
 while($list=mfa($row)){
+	if(count($table)!=0&&!in_array($list["name"],$table))continue;
 	$tablelist[]=$list["name"];
 	$row2=SELECT(array("*","COUNT(*) AS `COUNT`"),$list["name"],array(array("aval","1")),null,"all",array("muzzle","terminal"));
 	while($temp=mfa($row2)){
@@ -49,6 +57,10 @@ while($list=mfa($row)){
 <tr>
 	<td align="center" valign="top">
 		<h2>Total</h2>
+		<form action="" method="get">
+			<textarea name="table" cols="20" rows="5"><?php echo $_GET["talbe"]; ?></textarea><br>
+			<input name="" type="submit" value="送出">
+		</form>
 		<table border="0" cellpadding="2" cellspacing="0">
 		<tr>
 			<td class="datatd">muzzle</td>
@@ -80,7 +92,6 @@ while($list=mfa($row)){
 	</td>
 </tr>
 </table>
-</form>
 </td>
 </tr>
 </table>
