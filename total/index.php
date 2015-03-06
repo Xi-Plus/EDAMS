@@ -58,7 +58,7 @@ while($list=mfa($row)){
 	<td align="center" valign="top">
 		<h2>Total</h2>
 		<form action="" method="get">
-			<textarea name="table" cols="20" rows="5"><?php echo $_GET["talbe"]; ?></textarea><br>
+			<textarea name="table" cols="20" rows="5"><?php echo $_GET["table"]; ?></textarea><br>
 			<input name="" type="submit" value="送出">
 		</form>
 		<table border="0" cellpadding="2" cellspacing="0">
