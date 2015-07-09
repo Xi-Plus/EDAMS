@@ -114,7 +114,7 @@ meta();
 							<table border="0" cellspacing="0" cellpadding="0">
 								<tr>
 									<td valign="top" class="inputleft">帳號：</td>
-									<td valign="top" class="inputright"><input name="user" type="text" value="<?php echo $_POST['user'];?>" maxlength="32"></td>
+									<td valign="top" class="inputright"><input name="user" type="text" value="<?php echo @$_POST['user'];?>" maxlength="32"></td>
 								</tr>
 								<tr>
 									<td valign="top" class="inputleft">密碼：</td>
@@ -147,7 +147,7 @@ meta();
 							<table border="0" cellspacing="0" cellpadding="0">
 								<tr>
 									<td valign="top" class="inputleft">帳號：</td>
-									<td valign="top" class="inputright"><input name="suser" type="text" id="suser" placeholder="英文字開頭/僅含英數/至少3字" value="<?php echo $_POST['suser'];?>" maxlength="32"></td>
+									<td valign="top" class="inputright"><input name="suser" type="text" id="suser" placeholder="英文字開頭/僅含英數/至少3字" value="<?php echo @$_POST['suser'];?>" maxlength="32"></td>
 								</tr>
 								<tr>
 									<td valign="top" class="inputleft">密碼：</td>
@@ -159,7 +159,7 @@ meta();
 								</tr>
 								<tr>
 									<td valign="top" class="inputleft">姓名：</td>
-									<td valign="top" class="inputright"><input name="sname" type="text" id="sname" value="<?php echo $_POST['sname'];?>" maxlength="32" placeholder="最長32字"></td>
+									<td valign="top" class="inputright"><input name="sname" type="text" id="sname" value="<?php echo @$_POST['sname'];?>" maxlength="32" placeholder="最長32字"></td>
 								</tr>
 								<tr>
 									<td align="center" colspan="2"><input type="submit" value="註冊"></td>
