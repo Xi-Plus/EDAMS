@@ -24,7 +24,6 @@ else if(isset($_POST["addname"])){
 	}else {
 		INSERT( "tablelist",[ [ "name",$_POST["addname"] ] ]);
 		SQL("CREATE TABLE IF NOT EXISTS `".$_POST["addname"]."` (  `muzzle` double DEFAULT NULL,  `terminal` double NOT NULL,  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,  `aval` int(11) NOT NULL DEFAULT '1',  `token` CHAR(255) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-		SQL("ALTER TABLE `".$_POST["addname"]."` ADD UNIQUE KEY `token` (`token`);");
 		insertlog($data["id"],0,"addtable",true,$_POST["addname"]);
 		$message="已增加 ".$_POST["addname"];
 	}
